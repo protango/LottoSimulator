@@ -1,0 +1,138 @@
+@import url('https://fonts.googleapis.com/css?family=Faster+One');
+@import url('https://fonts.googleapis.com/css?family=Libre+Barcode+39');
+@font-face {
+    font-family: MerchantCopy;
+    src: url(assets/MerchantCopy.ttf);
+}
+.logo h1 {
+	font-family: 'Faster One', cursive;
+	text-align: center;
+	margin: 0px;
+	height: 40px;
+	color: midnightblue;
+}
+.logo h1 img {
+	height: 50px;
+}
+.logo>span {
+	font-style: italic;
+	size: 21px;
+	display: block;
+	text-align: center
+}
+.logo>span>span {
+	padding-left: 200px;
+	display: inline-block;
+}
+.card-block {
+	margin: 25px 0px;
+}
+.gameOptions, .numbers {
+	margin-top: 20px;
+	text-align: center;
+}
+.card {
+	display: inline-block;
+	margin: 10px;
+}
+.numbers input {
+	width: 50px;
+}
+.card-block a {
+	color: white;
+}
+.ticket {
+	background-image: url(assets/cubify.png);
+	display: inline-block; font-family: MerchantCopy; width: 350px; background-color:lightyellow;
+	color: #555;
+	border-left: 5px #bbc3e2 solid;
+}
+.ticket .logo h1 {
+	color: #444;
+	font-size: 30px;
+	height: 30px;
+	margin-top: 20px;
+}
+.ticket .logo h1 img {
+	height: 40px;
+	opacity: 0.9;
+}
+.ticket table {
+	border: none;
+	text-align: left;
+	font-size: 25px;
+	width: 75%;
+    margin: 0px auto;
+}
+.ticket table th,td {
+	padding: 0px 4px;
+}
+.ticket table tr:first-child {
+	font-size: 20px;
+}
+.ticket table tr:first-child th {
+	font-size: 20px;
+	line-height: 15px;
+}
+.ticket table tr th:last-child,.ticket table tr td:last-child {
+	padding-left: 20px;
+}
+.ticket table tr th:first-child,.ticket table tr td:first-child {
+	padding-right: 20px;
+	text-align: right;
+	font-weight: bold;
+	font-size: 20px;
+}
+.codes {
+	font-size: 18px;
+}
+.codes span:first-child {
+	float: left;
+	padding-left: 25px;
+	line-height: 10px;
+}
+.codes span:last-child {
+	float: right;
+	padding-right: 25px;
+	line-height: 10px;
+}
+.barcode {
+    display:inline-block;
+    -webkit-transform:scale(1,2); /* Safari and Chrome */
+    -moz-transform:scale(1,2); /* Firefox */
+    -ms-transform:scale(1,2); /* IE 9 */
+    -o-transform:scale(1,2); /* Opera */
+	transform:scale(1,2); /* W3C */
+	font-family: 'Libre Barcode 39', cursive;
+	font-size: 30px;
+    margin: 10px 0px 0px 0px;
+}
+.results {
+	border-collapse: separate; border-spacing: 5px;
+}
+.results tr td {
+	text-align: center;
+}
+.results span {
+	font-size: 25px;
+	display: inline-block;
+	width: 45px;
+	line-height: 45px;
+	background-color: dodgerblue;
+	color: white;
+}
+.results tr td:last-child span {
+	background-color: purple;
+	color: yellow;
+}
+.results tr td:last-child {
+	padding-left: 1rem!important;
+}
+.winner {
+	border: solid blue;
+	border-radius: 10px;
+	padding: 1px;
+}
+.buster {
+	text-decoration: line-through;
+}

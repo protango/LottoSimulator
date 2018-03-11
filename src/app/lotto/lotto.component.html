@@ -1,0 +1,130 @@
+<div class="logo">
+	<h1><img src="assets/cube.png">PowerCube</h1>
+	<span><span>PREMIUM LOTTERY</span></span>
+</div>
+<hr />
+<div *ngIf="claimed&&!dismissed" class="alert alert-success alert-dismissible fade show" role="alert">
+	<strong>Successfully claimed ${{formatMoney(totalWinnings,2)}} prize!</strong> Congratulations!
+	<button (click)="dismissed=true;" type="button" class="close" data-dismiss="alert" aria-label="Close">
+	  <span aria-hidden="true">&times;</span>
+	</button>
+</div>
+<div style="height: 66px;">
+	<div style="float: left;">
+		<h5>Choose a game type:</h5>
+		<ul class="nav nav-pills">
+			<li class="nav-item">
+				<a class="nav-link active" href="#">Quick Play</a>
+			</li>
+			<li class="nav-item">
+				<a class="nav-link" href="#">Create your own</a>
+			</li>
+		</ul>
+	</div>
+	<div class="card card-body bg-light" style="float: right;">
+			Money: ${{formatMoney(money,2)}}
+	</div>
+</div>
+<div class="gameOptions" *ngIf="type==null">
+	<div *ngFor="let k of objectKeys(gameTypes)" class="card text-center" style="width: 20rem;">
+		<div class="card-block">
+			<h4 class="card-title">{{k}} Ticket</h4>
+			<p class="card-text">{{gameTypes[k]["Games"]}} Game, {{gameTypes[k]["Entry"]}} Entry</p>
+			<a (click)="quickPick(k)" class="btn btn-primary">${{gameTypes[k]["Price"]}} - Buy Now</a>
+		</div>
+	</div>
+</div>
+<div *ngIf="type!=null" class="numbers text-left">
+	<div class="ticket text-center ml-4" style="float: left;">
+		<div class="logo">
+			<h1><img src="assets/cube.png">PowerCube</h1>
+		</div><br>
+		<span style="font-size: 20px;display:  block;line-height: 15px;">DRAW #{{game}}: <b>${{divResults[0]['prizePool']/1E6}}M JACKPOT!</b> *</span>
+		<span style="margin: 0px; font-size: 20px;">Printed: {{generated}}</span>
+		<div class="codes"><span>{{gameTypes[type]["Code"]}}</span><span>{{serial}}</span></div>
+		====================================================
+		<table *ngIf="ticket.length > 0; else syndicate">
+			<tr><th>Game</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th class="font-italic">PowerCube</th></tr>
+			<tr *ngFor="let g of ticket">
+				<td *ngFor="let c of [0,1,2,3,4,5,6,7]" >
+					<span *ngIf="!mark">{{(g[c]<10&&c>0?"0":"")+g[c]}}</span>
+					<span *ngIf="mark&&c==0">{{g[c]}}</span>
+					<span *ngIf="mark&&c!=0&&c!=7" [ngClass]="(results.indexOf(g[c])!=-1&&results.indexOf(g[c])!=6)?'winner':'buster'">{{(g[c]<10?"0":"")+g[c]}}</span>
+					<span *ngIf="mark&&c==7" [ngClass]="(results[6]==g[c])?'winner':'buster'">{{(g[c]<10?"0":"")+g[c]}}</span>
+				</td>
+			</tr>
+		</table>
+		<ng-template #syndicate>
+			SYNDICATE TICKET - BARCODE VALIDATION ONLY<br>
+			<span style="font-size:40px; font-weight: bold; line-height: 40px;">{{formatMoney(games,0)}}</span><br>
+			<span>Games are included in this ticket</span>
+		</ng-template>
+		====================================================<br>
+		<span style="font-size: 18px;">*MAXIMUM DIV 1 PAYOUT IS <b>{{divResults[0]['prizePool']/1E6}} MILLION</b><br>GOOD LUCK!</span>
+		<div class="text-right"><span class="pr-5 font-weight-bold" style="font-size:21px;">Price: ${{formatMoney(gameTypes[type]["Price"],2)}}</span></div>
+		<div>
+			<span class="barcode">{{barcode}}</span><br>
+			<span style="position: relative; top: -15px;">{{barcode}}</span>
+		</div>
+	</div>
+	<div class="d-inline-block ml-5" style="float: left;">
+			<button (click)="type=null" class="btn btn-default">&lt; Back</button><br>
+			<h3 class="mt-3">Draw #{{game}} Results</h3>
+			<table class="results">
+				<tr><th colspan="6">Winning Numbers</th><th class="font-italic pl-3">PowerCube</th></tr>
+				<tr>
+					<td *ngFor="let c of results"><span>{{c}}</span></td>
+				</tr>
+			</table>
+			<button (click)="mark = true" class="btn btn-info mt-5">Auto-Check Ticket</button>
+			<div *ngIf="mark">
+				<div *ngIf="gowinners.length > 0; else sorry">
+					<h5 class="mt-3">Winning Games:</h5>
+					<table class="table">
+						<tr><th>{{(ticket.length < 1?"Games":"Game #")}}</th><th>Division</th><th>Winnings</th></tr>
+						<tr *ngFor="let r of gowinners">
+							<td>{{r[0]+1}}</td>
+							<td>{{r[1]}}</td>
+							<td>${{formatMoney(divResults[r[1]-1]['divPrize']*(ticket.length < 1?(r[0]+1):1),2)}}</td>
+						</tr>
+						<tr *ngIf="!claimed">
+							<td style="border-top: none"></td>
+							<td style="border-top: none"></td>
+							<td style="border-top: solid black; font-weight: bold;">${{formatMoney(totalWinnings,2)}}</td>
+						</tr>
+					</table>
+					<button *ngIf="!claimed" class="btn btn-success" (click)="claim();">Claim Winnings</button>
+				</div>
+				<ng-template #sorry>Sorry, none of your games won</ng-template>
+			</div>
+			<hr />
+			<div>
+				<h5 class="mt-3">Division Results:</h5>
+				<em>{{formatMoney(people,0)}} Games were played during this draw.</em>
+				<table class="table">
+					<tr><th>Division</th><th>Win Value</th><th>Prize Pool</th><th>Winners</th></tr>
+					<tr *ngFor="let r of divResults">
+						<td>{{r['division']}}</td>
+						<td>${{formatMoney(r['divPrize'],2)}}</td>
+						<td>${{formatMoney(r['prizePool'],2)}}</td>
+						<td>{{r['winners']}}</td>
+					</tr>
+				</table>
+			</div>
+	</div>
+	<!--<table class="table">
+			<tr>
+				<th>Game</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th class="font-italic">PowerCube</th>
+			</tr>
+			<tr>
+				<th>1</th>
+				<td><input type="number"></td>
+				<td><input type="number"></td>
+				<td><input type="number"></td>
+				<td><input type="number"></td>
+				<td><input type="number"></td>
+				<td><input type="number"></td>
+				<td><input type="number"></td>
+			</tr>
+	</table>-->
+</div>

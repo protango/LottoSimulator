@@ -1,3 +1,24 @@
-<p>
-  currency works!
-</p>
+<em>Use the tool below to convert certain world currencies, the exchange rates are fetched via AJAX</em><hr />
+<div class="text-center">
+	<div *ngIf="curdata | async; let curdata; else loading">
+		<span>Rates current on {{udt}}</span> <button type="button" class="btn btn-info ml-3" (click)="rates();">Refresh</button><br><br>
+		{{ms.getData(cur)['symbol_native']}}
+		<input placeholder="Amount" type="number" [(ngModel)]="amnt" />
+		<select [(ngModel)]="cur">
+				<option value="" selected disabled>Source Currency</option>
+				<option *ngFor="let c of objectKeys(curdata['rates'])" [ngValue]="c">{{c + " - " + ms.getData(c)['name']}}</option>
+		</select>
+		<span class="d-none d-md-inline">&rarr;</span>
+		<span class="d-md-none"><br>&darr;<br></span>
+		<select [(ngModel)]="tocur">
+				<option value="" selected disabled>Destination Currency</option>
+				<option *ngFor="let c of objectKeys(curdata['rates'])" [ngValue]="c">{{c + " - " + ms.getData(c)['name']}}</option>
+		</select>
+		<div *ngIf="tocur && cur && amnt">
+			<h5 class="mt-3">{{ms.getData(cur)['symbol']+" "+formatMoney(amnt,ms.getData(cur)['decimal_digits'])}} = {{ms.getData(tocur)['symbol']+" "+formatMoney(calcur(curdata['rates'][cur],curdata['rates'][tocur],amnt),ms.getData(tocur)['decimal_digits'])}}</h5>
+			<img [src]='"http://www.countryflags.io/" + cur.substring(0,2) + "/shiny/64.png"'>
+			<img [src]='"http://www.countryflags.io/" + tocur.substring(0,2) + "/shiny/64.png"'>
+		</div>
+	</div>
+	<ng-template #loading>Loading Currency Data...</ng-template>
+</div>
