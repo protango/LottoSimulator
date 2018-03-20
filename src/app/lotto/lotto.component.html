@@ -22,7 +22,7 @@
 		</ul>
 	</div>
 	<div class="card card-body bg-light" style="float: right;">
-			Money: ${{formatMoney(money,2)}}
+			Money: <span [style.color]="money<0?'red':'inherit'" >${{formatMoney(money,2)}}</span>
 	</div>
 </div>
 <div class="gameOptions" *ngIf="type==null">
@@ -97,7 +97,6 @@
 				</div>
 				<ng-template #sorry>Sorry, none of your games won</ng-template>
 			</div>
-			<hr />
 			<div>
 				<h5 class="mt-3">Division Results:</h5>
 				<em>{{formatMoney(people,0)}} Games were played during this draw.</em>
@@ -110,6 +109,12 @@
 						<td>{{r['winners']}}</td>
 					</tr>
 				</table>
+				<h5 class="mt-3">Internal Financials:</h5>
+				<ul>
+					<li><strong>Takings: </strong>${{formatMoney(people*0.93,2)}}</li>
+					<li><strong>Payout: </strong>${{formatMoney(totalPrizePool,2)}}</li>
+					<li><strong>Profit: </strong>${{formatMoney(people*0.93 - winPrizePool,2)}}</li>
+				</ul>
 			</div>
 	</div>
 	<!--<table class="table">

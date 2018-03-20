@@ -69,6 +69,18 @@ export class LottoComponent implements OnInit {
 			"Price": 9290000,
 			"Entry": "Syndicate",
 			"Code": "QP1E7 929E4 SYN"
+		},
+		"Luck o' the Irish": {
+			"Games": 100000000,
+			"Price": 92900000,
+			"Entry": "Syndicate",
+			"Code": "QP1E8 929E5 SYN"
+		},
+		"Fools Gold": {
+			"Games": 1000000000,
+			"Price": 929000000,
+			"Entry": "Syndicate",
+			"Code": "QP1E9 929E6 SYN"
 		}
 	};
 	constructor() { }
@@ -155,15 +167,21 @@ export class LottoComponent implements OnInit {
 		let prizepools = [this.jackpot*1E6, people*0.0153, people*0.0161, people*0.0089, people*0.0068,people*0.0595, people*0.0534, people*0.1222];
 		let winners = this.genFakeWinners(fakepeople); // winners for fake people
 		
-		if (entry=="Standard") 
-			gowinners.forEach(element => {winners[element[1]-1]++;}); 
-		 else if (entry=="Syndicate")  
-			gowinners.forEach(element => {winners[element[1]-1]+=element[0]+1;}); 
+		if (entry=="Standard")
+			gowinners.forEach(element => {winners[element[1]-1]++;});
+		 else if (entry=="Syndicate")
+			gowinners.forEach(element => {winners[element[1]-1]+=element[0]+1;});
 		
 		if (winners[0]>0) this.jackpot = 0; // reset the jackpot if anyone won
 		let divResults = []; // build up object of division results for display (none of this data is new)
-		for (let i=0; i<prizepools.length; i++) 
+		let totalPrizePool = 0, winPrizePool=0;
+		for (let i=0; i<prizepools.length; i++) {
 			divResults.push({division: i+1, prizePool: prizepools[i], winners: winners[i], divPrize: (winners[i]==0?0:prizepools[i]/winners[i])});
+			totalPrizePool += prizepools[i];
+			winPrizePool += (winners[i]==0?0:prizepools[i]);
+		}
+		this["totalPrizePool"] = totalPrizePool;
+		this["winPrizePool"] = winPrizePool;
 		
 		let total=0;
 		if (entry=="Standard") 
@@ -174,7 +192,6 @@ export class LottoComponent implements OnInit {
 		this.divResults = divResults; // export more variables to scope
 		this.totalWinnings = total;
 	}
-
 	genFakeWinners(numOfPeople) : number[] {
 		let odds=[76767600,4040400,376312,19806,9123,641,480,110];
 		let winners=[];
@@ -183,40 +200,25 @@ export class LottoComponent implements OnInit {
 			let divChance = 1/odds[i]; // chance of an isolated person winning this div
 			let tryWinners = 0;  // number of people we're presuming to have won (increases each iteration)
 			let oddsGreater = 1; // chance that winners>=tryWinners
+			let nCr = 1; let scale=1;
 			do {
-				let test = this.binomial(divChance,numOfPeople,tryWinners);
-				oddsGreater -= test; //<-- this is the chance of EXACTLY %tryWinners% people winning 
+				if (tryWinners>0) 
+					nCr = nCr * (numOfPeople-(tryWinners-1))/((tryWinners-1)+1);
+				if (nCr==Infinity) {
+					tryWinners = Math.floor(numOfPeople/odds[i])+1; //if an overflow occurs, fallback to dumb method
+					const variation = 50;
+					tryWinners *= 1+(this.gaussianRand()*variation/100-variation/200); // vary the value by +-variation/2% (normally distributed)
+					tryWinners = Math.floor(tryWinners);
+					break;
+				}
+				let test = nCr*Math.pow(divChance,tryWinners)*Math.pow((1-divChance),(numOfPeople-tryWinners));
+				oddsGreater -= nCr*Math.pow(divChance,tryWinners)*Math.pow((1-divChance),(numOfPeople-tryWinners));
 				tryWinners++;
 			} while (Math.random()<oddsGreater); // test if winners>=trywinners
 			winners[i] = tryWinners-1; // we take off the last person since their the one that failed the win test
 			numOfPeople-= winners[i]; // take the winners out of the pool since you can't win twice
 		}
 		return winners;
-		/*
-		//we're going to take special effort to calculate how many people win the div one, two and three prizes (since it's so unlikely)
-		let div1Winners = 0, div2Winners=0, div3Winners=0, div1Chance=76767600, div2Chance=4040400, div3Chance=376312, batches=Math.ceil(numOfPeople/3E5);
-		for (let i = 0; i < batches; i++) {
-			//looping through each fake person, in batches of 300K
-			let batchCount = i==batches-1?numOfPeople-(batches-1)*3E5:3E5 //accounting for last batch
-			//does this batch contain a winner?
-			let d1winner = Math.random() < 1-Math.pow((div1Chance-1)/div1Chance,batchCount);
-			let d2winner = Math.random() < 1-Math.pow((div2Chance-1)/div2Chance,batchCount);
-			let d3winner = Math.random() < 1-Math.pow((div3Chance-1)/div3Chance,batchCount);
-			if (d1winner) div1Winners++;
-			if (d2winner) div2Winners++;
-			if (d3winner) div3Winners++;
-		}
-		if (div1Winners>0) this.jackpot =0;
-		return [
-			div1Winners, //div 1 odds (special case see above)
-			div2Winners, //div 2 odds
-			div3Winners, //div 3 odds
-			Math.floor(numOfPeople/19806), //div 4 odds
-			Math.floor(numOfPeople/9123), //div 5 odds
-			Math.floor(numOfPeople/641), //div 6 odds
-			Math.floor(numOfPeople/480), //div 7 odds
-			Math.floor(numOfPeople/110) //div 8 odds
-		];*/
 	}
 
 	claim() :void {
@@ -246,15 +248,12 @@ export class LottoComponent implements OnInit {
 		j = (j = i.length) > 3 ? j % 3 : 0;
 		return s + (j ? i.substr(0, j) + t : "") + i.substr(j).replace(/(\d{3})(?=\d)/g, "$1" + t) + (c ? d + Math.abs(n - parseInt(i)).toFixed(c).slice(2) : "");
 	};
-	binomial(chance,trials, target) : number {
-		//calculate ncr
-		let combinations=1;
-		for (let i=0; i<target; i++)
-			combinations*=(trials-i)/(i+1);
-		let out = combinations*Math.pow(chance,target)*Math.pow((1-chance),(trials-target));
-		if (Number.isNaN(out))
-			out = NaN;
-		return out;
-	}
+	gaussianRand() {
+		let rand = 0;
+		for (var i = 0; i < 100; i += 1) {
+		  rand += Math.random();
+		}
+		return rand / 100;
+	  }
 }
 

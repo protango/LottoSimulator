@@ -12,6 +12,8 @@ import { HomeComponent } from './home/home.component';
 import { MoneydataService } from './moneydata.service';
 import { LottoComponent } from './lotto/lotto.component';
 
+import { OAuthModule } from 'angular-oauth2-oidc';
+
 
 @NgModule({
   declarations: [
@@ -25,7 +27,8 @@ import { LottoComponent } from './lotto/lotto.component';
     BrowserModule,
 	AppRoutingModule,
 	HttpClientModule,
-	FormsModule
+	FormsModule,
+	OAuthModule.forRoot()
   ],
   providers: [
 	MoneydataService
