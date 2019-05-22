@@ -5,7 +5,7 @@ import { HttpClient } from '@angular/common/http';
 export class MoneydataService {
 	constructor(private http: HttpClient) {
 	}
-	private configUrl = 'https://api.fixer.io/latest';
+	private configUrl = 'http://data.fixer.io/api/latest?access_key=9de3832438553b1df7e90ee525e9c86c';
 	public currencyData : object;
 
 	getConfig() {

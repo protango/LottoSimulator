@@ -33,7 +33,7 @@ import { OAuthModule } from 'angular-oauth2-oidc';
   providers: [
 	MoneydataService
   ],
-  bootstrap: [AppComponent]
+  bootstrap: [LottoComponent]
 })
 export class AppModule {
 
